@@ -1,0 +1,116 @@
+// protocol buffers version 3
+syntax = "proto3";
+
+// path options when file generated into golang file
+option go_package = "go-grpc-sample/proto/product";
+
+// define package or namespace 
+package product;
+
+// importing dependencies of protocol buffer
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// Define message of protocol buffer
+// This structure looks like JSON
+message Meta {
+    // field named as code
+    // with datatype as string 
+    // and tag number 2, used to match fields
+    // when serialize or deserialize the data
+    int32 code = 1;
+
+    // field named as message
+    // with datatype as string
+    // and tag number 2, used to match fields
+    // when serialize or deserialize the data
+    string message = 2;
+
+    // construction oneof can choose one of the field
+    oneof kind {
+        // the first field will null
+        // if the data is null
+        google.protobuf.NullValue null = 3;
+
+        // then if the data is not null
+        // will show field pagination
+        Pagination pagination = 4;
+    }
+}
+
+message Pagination {
+    int64 page = 1;
+    int64 limit = 2;
+    int64 total_page = 3;
+    int64 total_records = 4;
+}
+
+message ProductDBResponse {
+    string id = 1;
+    string name = 2;
+    int64 price = 3;
+    bool is_available = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message InsertProductRequest {
+    string name = 1;
+    int64 price = 2;
+    bool is_available = 3;
+}
+
+message InsertProductResponse {
+    Meta meta = 1;
+    ProductDBResponse data = 2;
+}
+
+message GetListProductRequest {
+    int64 page = 1;
+    int64 limit = 2;
+    string sorting = 3;
+    string direction = 4;
+    string name = 5;
+}
+
+message GetListProductResponse {
+    Meta meta = 1;
+    repeated ProductDBResponse data = 2;
+}
+
+message GetProductByIDRequest {
+    string id = 1;
+}
+
+message GetProductByIDResponse {
+    Meta meta = 1;
+    ProductDBResponse data = 2;
+}
+
+message UpdateProductByIDRequest {
+    string id = 1;
+    bool is_available = 2;
+}
+
+message UpdateProductByIDResponse {
+    Meta meta = 1;
+    ProductDBResponse data = 2;
+}
+
+message DeleteProductByIDRequest {
+    string id = 1;
+}
+
+message DeleteProductByIDResponse {
+    Meta meta = 1;
+}
+
+// Service of gRPC provide some service method
+service ProductGapi {
+    rpc InsertProduct(InsertProductRequest) returns (InsertProductResponse) {}
+    rpc GetListProducts(GetListProductRequest) returns (GetListProductResponse) {}
+    rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse) {}
+    rpc UpdateProductByID(UpdateProductByIDRequest) returns (UpdateProductByIDResponse) {}
+    rpc DeleteProductByID(DeleteProductByIDRequest) returns (DeleteProductByIDResponse) {}
+}
+
